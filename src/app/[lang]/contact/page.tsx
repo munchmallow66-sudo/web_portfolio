@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { getDictionary, Locale } from "@/lib/i18n";
+import { getDictionary, dictionaries, Locale } from "@/lib/i18n";
 import toast from "react-hot-toast";
 
 interface ContactPageProps {
@@ -24,7 +24,7 @@ export default function ContactPage({ params }: ContactPageProps) {
     }, [params.lang]);
 
     // For static dictionary loading
-    const dictionary = require("@/lib/i18n").dictionaries[params.lang];
+    const dictionary = dictionaries[params.lang];
     const d = dictionary || dict;
 
     if (!d) {
