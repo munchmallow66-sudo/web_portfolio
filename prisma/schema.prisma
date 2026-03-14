@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id               String         @id @default(uuid())
+  title            String
+  slug             String         @unique
+  shortDescription String
+  fullDescription  String
+  techStack        String[]
+  tags             String[]
+  githubUrl        String?
+  liveUrl          String?
+  featured         Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  images           ProjectImage[]
+  analytics        Analytics?
+
+  @@index([slug])
+}
+
+model ProjectImage {
+  id        String  @id @default(uuid())
+  url       String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Analytics {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String
+  date        DateTime
+  location    String?
+  category    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  images      ActivityImage[]
+
+  @@index([slug])
+}
+
+model ActivityImage {
+  id         String   @id @default(uuid())
+  url        String
+  activityId String
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([activityId])
+}
