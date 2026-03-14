@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcryptjs'
 
 import { neonConfig } from '@neondatabase/serverless'
 import { PrismaNeon } from '@prisma/adapter-neon'
