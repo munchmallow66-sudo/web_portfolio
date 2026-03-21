@@ -6,7 +6,7 @@ export function slugify(text: string): string {
         .toLowerCase()
         .trim()
         .replace(/\s+/g, "-") // Replace spaces with -
-        .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+        .replace(/[^\w\u0E00-\u0E7F\-]+/g, "") // Allow Thai characters in slug
         .replace(/\-\-+/g, "-") // Replace multiple - with single -
         .replace(/^-+/, "") // Trim - from start of text
         .replace(/-+$/, ""); // Trim - from end of text
