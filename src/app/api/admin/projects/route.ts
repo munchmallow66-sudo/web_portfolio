@@ -83,35 +83,31 @@ export async function POST(request: NextRequest) {
         // Slug Generator
         const slug = await generateUniqueSlug(validatedData.title);
 
-        // Transaction Safety
-        const project = await prisma.$transaction(async (tx: any) => {
-            const newProject = await tx.project.create({
-                data: {
-                    title: validatedData.title,
-                    slug,
-                    shortDescription: validatedData.shortDescription,
-                    fullDescription: validatedData.fullDescription,
-                    techStack: validatedData.techStack,
-                    tags: validatedData.tags,
-                    githubUrl: validatedData.githubUrl,
-                    liveUrl: validatedData.liveUrl,
-                    featured: validatedData.featured,
-                    images: {
-                        create: validatedData.images.map((url) => ({ url })),
-                    },
-                    analytics: {
-                        create: { views: 0 },
-                    },
+        // Create project with nested relations (atomic in Prisma)
+        const project = await prisma.project.create({
+            data: {
+                title: validatedData.title,
+                slug,
+                shortDescription: validatedData.shortDescription,
+                fullDescription: validatedData.fullDescription,
+                techStack: validatedData.techStack,
+                tags: validatedData.tags,
+                githubUrl: validatedData.githubUrl,
+                liveUrl: validatedData.liveUrl,
+                featured: validatedData.featured,
+                images: {
+                    create: validatedData.images.map((url) => ({ url })),
                 },
-                select: {
-                    id: true,
-                    slug: true,
-                    title: true,
-                    createdAt: true,
+                analytics: {
+                    create: { views: 0 },
                 },
-            });
-
-            return newProject;
+            },
+            select: {
+                id: true,
+                slug: true,
+                title: true,
+                createdAt: true,
+            },
         });
 
         const response = NextResponse.json(project, { status: 201 });

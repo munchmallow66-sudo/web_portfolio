@@ -117,36 +117,34 @@ export async function PUT(
             );
         }
 
-        const updatedProject = await prisma.$transaction(async (tx: any) => {
-            await tx.projectImage.deleteMany({
-                where: { projectId: id },
-            });
+        // Delete old images, then update project
+        // (Interactive transactions not supported by Neon adapter)
+        await prisma.projectImage.deleteMany({
+            where: { projectId: id },
+        });
 
-            const project = await tx.project.update({
-                where: { id },
-                data: {
-                    title: validatedData.title,
-                    slug: nextSlug,
-                    shortDescription: validatedData.shortDescription,
-                    fullDescription: validatedData.fullDescription,
-                    techStack: validatedData.techStack,
-                    tags: validatedData.tags,
-                    githubUrl: validatedData.githubUrl,
-                    liveUrl: validatedData.liveUrl,
-                    featured: validatedData.featured,
-                    images: {
-                        create: validatedData.images.map((url) => ({ url })),
-                    },
+        const updatedProject = await prisma.project.update({
+            where: { id },
+            data: {
+                title: validatedData.title,
+                slug: nextSlug,
+                shortDescription: validatedData.shortDescription,
+                fullDescription: validatedData.fullDescription,
+                techStack: validatedData.techStack,
+                tags: validatedData.tags,
+                githubUrl: validatedData.githubUrl,
+                liveUrl: validatedData.liveUrl,
+                featured: validatedData.featured,
+                images: {
+                    create: validatedData.images.map((url) => ({ url })),
                 },
-                select: {
-                    id: true,
-                    slug: true,
-                    title: true,
-                    updatedAt: true,
-                },
-            });
-
-            return project;
+            },
+            select: {
+                id: true,
+                slug: true,
+                title: true,
+                updatedAt: true,
+            },
         });
 
         const response = NextResponse.json(updatedProject);
